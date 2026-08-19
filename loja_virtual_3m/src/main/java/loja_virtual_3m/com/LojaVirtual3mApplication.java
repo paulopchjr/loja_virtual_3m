@@ -1,4 +1,4 @@
-package _m.com;
+package loja_virtual_3m.com;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
