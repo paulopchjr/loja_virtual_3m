@@ -33,7 +33,7 @@ public class CumpoDesconto implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	private Date dataValidadeCumpom;
-	
+
 	public Long getId() {
 		return id;
 	}
