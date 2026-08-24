@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -19,12 +21,18 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "venda_compra_loja_virtual")
+@Table(name = "venda_compra_loja_virtual", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "nota_fiscal_venda_id", name = "nota_fiscal_venda_uk") })
 @SequenceGenerator(name = "seq_venda_compra_loja_virtual", sequenceName = "seq_venda_compra_loja_virtual", allocationSize = 1, initialValue = 1)
 public class VendaCompraLojaVirtual implements Serializable {
 
+
+	private static final long serialVersionUID = 1L;
+
+	@Column(nullable = false)
 	private BigDecimal valorTotal;
 
 	private BigDecimal valorDesconto;
@@ -49,21 +57,25 @@ public class VendaCompraLojaVirtual implements Serializable {
 	@JoinColumn(name = "endereco_cobranca_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "endereco_cobranca__fk"))
 	private Endereco enderecoCobranca;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "nota_fiscal_venda_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "nota_fiscal_venda__fk"))
 	private NotaFiscalVenda notaFiscalVenda;
 
 	@ManyToOne
-	@JoinColumn(name = "cumpom_desconto_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "cumpom_desconto_id"))
+	@JoinColumn(name = "cumpom_desconto_id", foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "cumpom_desconto_id"))
 	private CumpoDesconto cumpoDesconto;
 
+	@Column(nullable = false)
 	private BigDecimal valorFrete;
 
+	@Column(nullable = false)
 	private Integer diasEntrega;
 
+	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataVenda;
 
+	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataEntrega;
 

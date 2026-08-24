@@ -1,6 +1,5 @@
 package loja_virtual_3m.com.model;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
