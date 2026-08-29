@@ -3,9 +3,9 @@
 Bem-vindo ao repositório do back-end da loja virtual que estou desenvolvendo! 
 
 Diferente de um projeto feito apenas para cumprir tabela em um curso, a história por trás deste código é muito pessoal: 
-*"estou construindo este sistema sob medida para informatizar e impulsionar o negócio real da minha irmã." *
+**"estou construindo este sistema sob medida para informatizar e impulsionar o negócio real da minha irmã."**
 
-Como estou no meu processo de transição de carreira para me tornar um *Desenvolvedor Java Júnior*, decidi usar essa necessidade real da minha família
+Como estou no meu processo de transição de carreira para me tornar um **Desenvolvedor Java Júnior**, decidi usar essa necessidade real da minha família
 como o meu maior laboratório de testes e aprendizado. 
 O projeto lida com regras de negócio complexas e de nível corporativo, como controle financeiro (`ContaPagar`/`ContaReceber`), 
 permissões de usuários e emissão de notas fiscais.
@@ -18,7 +18,7 @@ garantindo que o código seja seguro e escalável.
 
 ## 🛠️ Por que escolhi estas Tecnologias?
 
-Para garantir que o negócio da minha irmã rode sem travamentos e com a máxima segurança que o mercado exige hoje, 
+**Para garantir que o negócio da minha irmã rode sem travamentos e com a máxima segurança que o mercado exige hoje**, 
 optei por trabalhar com a stack mais recente e estável do ecossistema Java:
 
 *   **Java 21 & Spring Boot (versões estáveis recentes):
