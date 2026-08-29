@@ -40,12 +40,9 @@ public class ContaPagar implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private StatusContaPagar statusContaPagar;
 
-	
 	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
 	private Date dataVencimento;
 
-	@Temporal(TemporalType.DATE)
 	private Date dataPagamento;
 
 	@Column(nullable = false)

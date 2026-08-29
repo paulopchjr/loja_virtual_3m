@@ -9,17 +9,17 @@ import loja_virtual_3m.com.repository.AcessoRepository;
 @Service
 public class AcessoServices {
 
-	
-	// injencao de depedencia
-	@Autowired
 	private AcessoRepository acessoRepository;
-	
-	
+
+	/* reforçando a injecao de depedencias */
+	@Autowired
+	public AcessoServices(AcessoRepository repositoryAcesso) {
+		this.acessoRepository = repositoryAcesso;
+
+	}
+
 	public Acesso salvar(Acesso acesso) {
 		return acessoRepository.save(acesso);
 	}
-	
-	
-	
-	
+
 }
