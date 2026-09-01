@@ -1,4 +1,4 @@
-package _m.com;
+package loja_virtual_3m.com;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import loja_virtual_3m.com.LojaVirtual3mApplication;
 import loja_virtual_3m.com.controller.AcessoControler;
 import loja_virtual_3m.com.model.Acesso;
 import loja_virtual_3m.com.repository.AcessoRepository;
@@ -78,7 +77,7 @@ class LojaVirtual3mApplicationTests {
 		 * retorna um json
 		 */
 		Acesso objAcessoRetorno = mapper.readValue(retornoApi.andReturn().getResponse().getContentAsString(),
-				Acesso.class);
+				Acesso.class);  // RETORNA UM JSON
 		
 		
 		/*valida o que foi setado do objeto salvar, do que realmente foi salvo*/
@@ -102,7 +101,7 @@ class LojaVirtual3mApplicationTests {
 		assertTrue(acesso.getId() > 0);
 
 		/* Validar dados salvos */
-		assertEquals("ROLE_PCJUNIOR", acesso.getDescricao(),
+		assertEquals("ROLE_PCJUNIOR", acesso.getDescricao(), /* Aqui quebra o cdigo, porque ROLE_PCJUNIOR. NAOFOI GRAVADO NO BANCO, O QUEFOI SETADO PRA GRAVAR FOI ROLE_PC2026C*/
 				"ERRO CRÍTICO: A descrição retornada pelo banco é diferente da que foi enviada!");
 
 		/* Teste carregamento */

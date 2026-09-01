@@ -24,7 +24,8 @@ public class WebConfigSecurity implements HttpSessionListener {
 		http.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/**/salvarAcesso").permitAll()
 						.requestMatchers(HttpMethod.POST, "/**/salvarAcesso").permitAll()
-						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso").permitAll().anyRequest()
+						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso").permitAll()
+						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}").permitAll().anyRequest()
 						.authenticated())// todos os endpoints exigem validacao
 
 				// ativa autenticacao para o postman
@@ -38,6 +39,7 @@ public class WebConfigSecurity implements HttpSessionListener {
 		// Corrigido: adicionada a barra '/' no início de todas as rotas
 		return (web) -> web.ignoring().requestMatchers(HttpMethod.GET, "/**/salvarAcesso")
 				.requestMatchers(HttpMethod.POST, "/**/salvarAcesso")
-				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso");
+				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso")
+				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}");
 	}
 }
