@@ -1,7 +1,11 @@
 package loja_virtual_3m.com.controller;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import loja_virtual_3m.com.model.Acesso;
 import loja_virtual_3m.com.repository.AcessoRepository;
 import loja_virtual_3m.com.services.AcessoServices;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = LojaVirtual3mApplication.class)
@@ -41,7 +46,7 @@ public class AcessoControllerTest {
 		 */
 		/* 1 passo nao dependender do banco, usa testes unitarios */
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("ROLE_JUNIOR_TESTE_31-08-2025");
+		acesso.setDescricao("ROLE_TESTE_JR");
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -107,4 +112,64 @@ public class AcessoControllerTest {
 		assertFalse(DadoNoBanco, "A INFORMAÇÃO AINDA ESTÁ NO BANCO");
 
 	}
+
+	@Test
+	public void testeAPiPegarAcessoPorId() throws JacksonException, Exception {
+
+		Acesso acesso = new Acesso();
+
+		acesso.setDescricao("ROLE_TESTE_JR");
+		acesso = acessoRepository.save(acesso);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		ResultActions retornoApi = mockMvc /* deleteAcessoporid */
+				.perform(MockMvcRequestBuilders.get("/buscarAcessoid/" + acesso.getId())
+						.content(objectMapper.writeValueAsString(acesso)).contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON));
+
+		System.out.println("RETORNOR API: " + retornoApi.andReturn().getResponse().getContentAsString());
+		System.out.println("RETORNOR STATUS API: " + retornoApi.andReturn().getResponse().getStatus() + "ENCONTRADO");
+
+		Acesso acesso2 = objectMapper.readValue(retornoApi.andReturn().getResponse().getContentAsString(),
+				Acesso.class);
+		assertEquals(acesso.getDescricao(), acesso2.getDescricao());
+
+		assertEquals(acesso.getId(), acesso2.getId());
+
+		int statusHttp = retornoApi.andReturn().getResponse().getStatus();
+		assertEquals(200, statusHttp, "API FALHOU AO buscar o ID O ACESSO!");
+
+	}
+
+	@Test
+	public void TesteRestApiBuscarAcessoPorDesc() throws JacksonException, Exception {
+		Acesso acesso = new Acesso();
+		acesso.setDescricao("ROLE_TESTE_JR");
+
+		ObjectMapper json = new ObjectMapper();
+
+		ResultActions retornoApi = mockMvc.perform(MockMvcRequestBuilders.get("/buscarAcesso/" + acesso.getDescricao())
+				.content(json.writeValueAsString(json)).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));
+
+		System.out.println("RETORNOR API: " + retornoApi.andReturn().getResponse().getContentAsString());
+		System.out.println("RETORNOR STATUS API: " + retornoApi.andReturn().getResponse().getStatus() + "ENCONTRADO");
+
+		/* VEREFICIAR SE A API RESPONDEU HTTP 200 OK */
+		int statusHttp = retornoApi.andReturn().getResponse().getStatus();
+
+		assertEquals(200, statusHttp, "API FALHOU AO BUSCAR OS ACESSOS");
+
+		List<Acesso> listaAcessos = json.readValue(retornoApi.andReturn().getResponse().getContentAsString(),
+				new TypeReference<List<Acesso>>() {
+				});
+
+		assertTrue(listaAcessos.size() >= 2, "Deveria contter pelo menos 2 registros!");
+
+		assertTrue(listaAcessos.get(0).getDescricao().contains("ROLE_TESTE_JR"),
+				"O registro retornado não corresponde ao termo da buscada!");
+
+	}
+
 }

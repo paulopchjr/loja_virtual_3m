@@ -25,7 +25,10 @@ public class WebConfigSecurity implements HttpSessionListener {
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/**/salvarAcesso").permitAll()
 						.requestMatchers(HttpMethod.POST, "/**/salvarAcesso").permitAll()
 						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso").permitAll()
-						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}").permitAll().anyRequest()
+						.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}").permitAll()
+						.requestMatchers(HttpMethod.GET, "/**/buscarAcessoid/{id}").permitAll()
+						.requestMatchers(HttpMethod.GET,"/buscarAcesso/{desc}").permitAll()
+						.anyRequest()
 						.authenticated())// todos os endpoints exigem validacao
 
 				// ativa autenticacao para o postman
@@ -40,6 +43,8 @@ public class WebConfigSecurity implements HttpSessionListener {
 		return (web) -> web.ignoring().requestMatchers(HttpMethod.GET, "/**/salvarAcesso")
 				.requestMatchers(HttpMethod.POST, "/**/salvarAcesso")
 				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcesso")
-				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}");
+				.requestMatchers(HttpMethod.DELETE, "/**/deleteAcessoId/{id}")
+				.requestMatchers(HttpMethod.GET,"/buscarAcesso/{desc}")
+				.requestMatchers(HttpMethod.GET, "/**/buscarAcessoid/{id}");
 	}
 }
