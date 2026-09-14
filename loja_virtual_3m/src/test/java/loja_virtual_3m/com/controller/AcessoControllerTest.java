@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,6 +25,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = LojaVirtual3mApplication.class)
 @AutoConfigureMockMvc
 public class AcessoControllerTest {
@@ -45,7 +48,7 @@ public class AcessoControllerTest {
 		 */
 		/* 1 passo nao dependender do banco, usa testes unitarios */
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("ROLE_TESTE_JR");
+		acesso.setDescricao("AÇÃO");
 
 		ObjectMapper objectMapper = new ObjectMapper();
 

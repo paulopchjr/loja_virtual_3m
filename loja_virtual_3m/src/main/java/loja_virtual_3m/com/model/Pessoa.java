@@ -36,6 +36,9 @@ public abstract class Pessoa implements Serializable {
 	
 	@Column(nullable = false)
 	private String telefone;
+	
+	@Column
+	private String tipoPessoa;
 
 	// só foi defenido pelo analista que havera somentes dois enderecos para cada
 	// pessoa nao pesar no banco
