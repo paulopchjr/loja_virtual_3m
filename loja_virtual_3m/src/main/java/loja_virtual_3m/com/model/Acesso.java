@@ -2,9 +2,11 @@ package loja_virtual_3m.com.model;
 
 import java.util.Objects;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +16,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @SequenceGenerator(name = "seq_acesso", sequenceName = "seq_acesso", allocationSize = 1, initialValue = 1)
 @Table(name = "acesso")
 public class Acesso implements GrantedAuthority {
@@ -24,7 +27,7 @@ public class Acesso implements GrantedAuthority {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_acesso")
 	private Long id;
 
-	@Column(name = "acesso_desc", nullable = false) /*Roles:Admin, vendendor, geerente*/
+	@Column(name = "acesso_desc", nullable  = false) /*Roles:Admin, vendendor, geerente*/
 	private String descricao;   
 
 	public Long getId() {

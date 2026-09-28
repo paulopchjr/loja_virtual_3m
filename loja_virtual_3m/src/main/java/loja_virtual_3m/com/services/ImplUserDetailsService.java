@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import loja_virtual_3m.com.model.Usuario;
 import loja_virtual_3m.com.repository.UsuarioRepository;
@@ -23,6 +24,7 @@ public class ImplUserDetailsService implements UserDetailsService {
 	
 	
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 		/* Recebe o login para consulta */

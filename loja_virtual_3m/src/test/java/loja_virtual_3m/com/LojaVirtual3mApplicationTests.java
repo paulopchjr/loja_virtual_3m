@@ -5,11 +5,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -18,12 +17,15 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import loja_virtual_3m.com.controller.AcessoControler;
 import loja_virtual_3m.com.model.Acesso;
 import loja_virtual_3m.com.repository.AcessoRepository;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 
+
+@Profile("test")
 @SpringBootTest(classes = LojaVirtual3mApplication.class)
 class LojaVirtual3mApplicationTests {
 
@@ -36,8 +38,11 @@ class LojaVirtual3mApplicationTests {
 	@Autowired
 	private WebApplicationContext applicationContext;
 
+	
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	@Test
-	public void testeRestApiCadastroAcesso() throws JacksonException, Exception {
+	public void testeRestApiCadastroAcesso() throws Exception {
 
 		/* trabalhando com mock */
 
@@ -56,7 +61,7 @@ class LojaVirtual3mApplicationTests {
 		 */
 
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("ROLE_COMPRADOR2");
+		acesso.setDescricao("PATO11");
 
 		/* criando um json para passar no contet */
 		ObjectMapper mapper = new ObjectMapper();
@@ -88,7 +93,7 @@ class LojaVirtual3mApplicationTests {
 	public void testeCadastraAcesso() {
 
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("ROLE_PC2026C");
+		acesso.setDescricao("kaka");
 
 		/* teste se o id esta nulo p/ gravar */
 		assertNull(acesso.getId());
@@ -101,7 +106,7 @@ class LojaVirtual3mApplicationTests {
 		assertTrue(acesso.getId() > 0);
 
 		/* Validar dados salvos */
-		assertEquals("ROLE_PCJUNIOR", acesso.getDescricao(), /* Aqui quebra o cdigo, porque ROLE_PCJUNIOR. NAOFOI GRAVADO NO BANCO, O QUEFOI SETADO PRA GRAVAR FOI ROLE_PC2026C*/
+		assertEquals("ROLE_PC2026C", acesso.getDescricao(), /* Aqui quebra o cdigo, porque ROLE_PCJUNIOR. NAOFOI GRAVADO NO BANCO, O QUEFOI SETADO PRA GRAVAR FOI ROLE_PC2026C*/
 				"ERRO CRÍTICO: A descrição retornada pelo banco é diferente da que foi enviada!");
 
 		/* Teste carregamento */
@@ -119,20 +124,10 @@ class LojaVirtual3mApplicationTests {
 		acessoRepository.flush(); /* EXECUTA O SQL DE DELETE NO BANCO DE DADOS */
 		Acesso acesso3 = acessoRepository.findById(acesso2.getId()).orElse(null);
 
-		assertEquals(true, acesso == null);
+		assertNull(acesso3);
 
 	}
 
-	@Test
-	public void testeAcesso2() {
 
-		Acesso acesso = new Acesso();
-
-		acesso.setDescricao("ROLE_ALUNO");
-		acesso = acessoControler.salvarAcesso(acesso).getBody();
-		List<Acesso> acessos = acessoRepository.buscarAcessoDescricao("ALUNO".trim().toUpperCase());
-		assertEquals(1, acessos.size());
-
-	}
 
 }

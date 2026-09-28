@@ -3,27 +3,33 @@ package loja_virtual_3m.com.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import loja_virtual_3m.com.LojaVirtual3mApplication;
 import loja_virtual_3m.com.model.Acesso;
 import loja_virtual_3m.com.repository.AcessoRepository;
 import loja_virtual_3m.com.services.AcessoServices;
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = LojaVirtual3mApplication.class)
@@ -35,9 +41,41 @@ public class AcessoControllerTest {
 
 	@Autowired
 	private AcessoRepository acessoRepository;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
+	
+	private String token;
 
 	@Autowired
 	private AcessoServices acessoServices;
+	
+	
+	
+	public void setup() throws Exception {
+		
+		Map<String, String> loginMap = new HashMap<>();
+		loginMap.put("user","admin");
+		loginMap.put("password", "admin");
+		
+		
+		MvcResult result = mockMvc.perform(post("/login")
+				
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsBytes(loginMap)))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		this.token = result.getResponse().getHeader("Authorization");
+				
+				
+		
+		
+		
+	}
+	
+	
+
 
 	@Test
 	public void testeApiSalvarAcesso() throws JacksonException, Exception {
@@ -48,7 +86,7 @@ public class AcessoControllerTest {
 		 */
 		/* 1 passo nao dependender do banco, usa testes unitarios */
 		Acesso acesso = new Acesso();
-		acesso.setDescricao("AÇÃO");
+		acesso.setDescricao("AÇÃO_RONALDO");
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -65,6 +103,7 @@ public class AcessoControllerTest {
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	@Test
 	public void TesteAPIDeleteController() throws JacksonException, Exception {
 		Acesso acesso = new Acesso();
@@ -88,7 +127,9 @@ public class AcessoControllerTest {
 		assertFalse(DadoNoBanco, "A INFORMAÇÃO AINDA ESTÁ NO BANCO");
 
 	}
-
+	
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	@Test
 	public void testeAPIDeletePorId() throws JacksonException, Exception {
 
@@ -126,8 +167,8 @@ public class AcessoControllerTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions retornoApi = mockMvc /* deleteAcessoporid */
-				.perform(MockMvcRequestBuilders.get("/buscarAcessoid/" + acesso.getId())
-						.content(objectMapper.writeValueAsString(acesso)).contentType(MediaType.APPLICATION_JSON)
+				.perform(MockMvcRequestBuilders.get("/buscarAcessoid/id/" + acesso.getId())
+						.content(objectMapper.writeValueAsString(acesso)).header("Authorization", token ).contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON));
 
 		System.out.println("RETORNOR API: " + retornoApi.andReturn().getResponse().getContentAsString());
@@ -151,8 +192,9 @@ public class AcessoControllerTest {
 
 		ObjectMapper json = new ObjectMapper();
 
-		ResultActions retornoApi = mockMvc.perform(MockMvcRequestBuilders.get("/buscarAcesso/" + acesso.getDescricao())
-				.content(json.writeValueAsString(json)).contentType(MediaType.APPLICATION_JSON)
+		ResultActions retornoApi = mockMvc.perform(MockMvcRequestBuilders.get("/buscarAcesso/desc/" + acesso.getDescricao())
+				.header("Authorization", token)
+				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON));
 
 		System.out.println("RETORNOR API: " + retornoApi.andReturn().getResponse().getContentAsString());
