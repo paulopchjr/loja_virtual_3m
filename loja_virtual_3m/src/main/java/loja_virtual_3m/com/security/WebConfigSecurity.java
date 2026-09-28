@@ -33,8 +33,8 @@ public class WebConfigSecurity implements HttpSessionListener {
 	private ImplUserDetailsService implUserDetailsService;
 	private final JWTTokenAutenticacaoService jwtTokenAutenticacaoService;
 
-	@Autowired
-	public WebConfigSecurity(@Lazy ImplUserDetailsService userDetailService,
+	
+	public WebConfigSecurity(ImplUserDetailsService userDetailService,
 			JWTTokenAutenticacaoService jwtTokenAutenticacaoService) {
 		this.implUserDetailsService = userDetailService;
 		this.jwtTokenAutenticacaoService = jwtTokenAutenticacaoService;

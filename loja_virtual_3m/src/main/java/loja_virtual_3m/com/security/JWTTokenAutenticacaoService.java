@@ -32,7 +32,7 @@ public class JWTTokenAutenticacaoService {
 	private final ApplicationContextLoad applicationContextLoad;
 
 	/* token de validade de 30 dias */
-	private static final long EXPIRATION_TIME_10_DAYS = 864_000_000L;
+	private static final long EXPIRATION_TIME_10_DAYS =864_000_000L ;
 
 	/* Senha para juntar com JWT para Criptografia */
 	private static final String SECRET = "tY4rE8wQ1mN7vB9zX2kL5pQ8sW3dF6gH1jK4lP7zX0cV3bN6mQ9wE2rT5yU8iI1o";
@@ -114,7 +114,7 @@ public class JWTTokenAutenticacaoService {
 
 			String msgErro = switch (e) {
 			case MalformedJwtException mjwt -> "O formato do token está inválido !!!";
-			case ExpiredJwtException ejwt -> "O token de acesso enviado já expirou!!!";
+			case ExpiredJwtException ejwt -> "O token de acesso enviado já expirou! Efetue login novamente";
 			case SignatureException sjwt -> "A assinatura digital do token é inválida !!";
 			default -> "Erro na seguranção do token";
 			};
