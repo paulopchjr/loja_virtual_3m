@@ -55,7 +55,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		try {
 			jwtTokenAutenticacaoService.addAuthentication(response, authResult.getName());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

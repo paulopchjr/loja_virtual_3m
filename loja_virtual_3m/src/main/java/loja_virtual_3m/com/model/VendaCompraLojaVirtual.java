@@ -29,7 +29,6 @@ import jakarta.persistence.UniqueConstraint;
 @SequenceGenerator(name = "seq_venda_compra_loja_virtual", sequenceName = "seq_venda_compra_loja_virtual", allocationSize = 1, initialValue = 1)
 public class VendaCompraLojaVirtual implements Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false)
@@ -78,6 +77,18 @@ public class VendaCompraLojaVirtual implements Serializable {
 	@Column(nullable = false)
 	@Temporal(TemporalType.DATE)
 	private Date dataEntrega;
+
+	@ManyToOne(targetEntity = Pessoa.class)
+	@JoinColumn(name = "empresa_id", nullable = false, foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "empresa_fk"))
+	private Pessoa empresa;
+
+	public Pessoa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Pessoa empresa) {
+		this.empresa = empresa;
+	}
 
 	public BigDecimal getValorTotal() {
 		return valorTotal;

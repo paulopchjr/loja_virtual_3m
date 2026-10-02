@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class ErrorDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private String error;
 	private String code;
 

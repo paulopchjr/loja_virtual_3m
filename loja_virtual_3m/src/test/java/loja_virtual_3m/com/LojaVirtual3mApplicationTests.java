@@ -1,9 +1,9 @@
 package loja_virtual_3m.com;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import loja_virtual_3m.com.Exceptions.ExcessoesCustomizadas;
 import loja_virtual_3m.com.controller.AcessoControler;
 import loja_virtual_3m.com.model.Acesso;
 import loja_virtual_3m.com.repository.AcessoRepository;
@@ -90,7 +91,7 @@ class LojaVirtual3mApplicationTests {
 	}
 
 	@Test
-	public void testeCadastraAcesso() {
+	public void testeCadastraAcesso() throws ExcessoesCustomizadas {
 
 		Acesso acesso = new Acesso();
 		acesso.setDescricao("kaka");
