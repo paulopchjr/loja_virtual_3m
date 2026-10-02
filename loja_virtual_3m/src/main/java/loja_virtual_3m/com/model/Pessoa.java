@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.OptBoolean;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -35,6 +38,7 @@ public abstract class Pessoa implements Serializable {
 	@Column(nullable = false)
 	private String nome;
 
+	 @JsonFormat(lenient = OptBoolean.FALSE)
 	@Column(nullable = false)
 	private String email;
 

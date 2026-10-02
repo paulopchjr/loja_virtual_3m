@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import loja_virtual_3m.com.DTO.ErrorDto;
@@ -50,19 +53,20 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 			msg = String.format("O método HTTP '%s não é permitido para este enpoint.Por favor, utilize: %s. ",
 					metodoEnviado, metodoSuportados);
-		} 
-			
-			else if (ex instanceof MismatchedInputException) {
+		}
+
+		else if (ex instanceof MismatchedInputException || ex instanceof HttpMessageNotReadableException
+				|| ex instanceof InvalidFormatException || ex instanceof JsonParseException) {
 			msg = "Não está sendo enviado os dados para requisição";
 		}
 
 		else {
-			msg = ex.getMessage();
+			msg = ex.getMessage() !=null ? ex.getMessage() :"Error sem mensagem disponível";
 		}
 
-		errorDto.setError(msg);
+		errorDto.setError(msg.toString().trim());
 
-		HttpStatus httpStatus = HttpStatus.resolve(statusCode.hashCode());
+		HttpStatus httpStatus = HttpStatus.resolve(statusCode.value());
 		String reasonPhrase = (httpStatus != null) ? httpStatus.getReasonPhrase() : "Status desconhecido ";
 		errorDto.setCode(statusCode.value() + "=====>" + reasonPhrase);
 
@@ -75,10 +79,10 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 		ErrorDto errorDto = new ErrorDto();
 
-		String msg = "Erro na operação de dados";
+		String msg = "";
 
 		if (ex instanceof DataIntegrityViolationException) {
-			msg = "Erro de integridade de dados: " + ex.getLocalizedMessage();
+			msg = "Erro de integridade de dados: " + ex.getMessage();
 
 			// Erro violação de constraint(chave estrangeira/ duplicada)
 			if (ex.getCause() instanceof ConstraintViolationException) {
@@ -88,6 +92,7 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 				msg = "Erro de restrição de banco. Constraint afetada: "
 						+ constraintViolationException.getConstraintName();
 			}
+			
 		} else if (ex instanceof ConstraintViolationException) {
 			msg = "Chave estrangeira ou integridade violada: "
 					+ ((ConstraintViolationException) ex).getConstraintName();
@@ -117,9 +122,11 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 		} else {
 
-			msg = ex.getMessage();
+			msg = ex.getMessage() !=null? ex.getMessage():"Erro desconhecido na camada de persistencia";
 
 		}
+		
+		errorDto.setError(msg);
 
 		errorDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
 

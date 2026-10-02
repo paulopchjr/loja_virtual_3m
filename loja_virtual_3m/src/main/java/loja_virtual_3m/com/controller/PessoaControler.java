@@ -40,6 +40,9 @@ public class PessoaControler {
 
 		}
 		
+		
+		
+		
 		pj = pessoaUsuarioService.savePessoaJ(pj);
 
 		return new ResponseEntity<Pessoa_Juridica>(pj, HttpStatus.OK);
