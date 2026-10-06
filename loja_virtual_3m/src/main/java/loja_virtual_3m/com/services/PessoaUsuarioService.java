@@ -50,29 +50,22 @@ public class PessoaUsuarioService {
 			userPj.setPessoa(pJuridica);
 			userPj.setLogin(pJuridica.getEmail());
 
-			
 			System.out.printf("userPj: " + userPj.toString());
-			
-			
-			// enviada por email
+
 			String senhaAleatoria = UUID.randomUUID().toString().substring(0, 15);
-			System.out.printf("Senha Alatoria=" + senhaAleatoria);
+			System.out.println("Senha Alatoria=" + senhaAleatoria);
 
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(senhaAleatoria);
 
 			userPj.setSenha(senhaCriptografada);
-			
+
 			uRepository.save(userPj);
-			
-			
+
 			uRepository.insertUserPj(userPj.getId());
 
 		}
 
 		return pJuridica;
 	}
-
-	
-	
 
 }
