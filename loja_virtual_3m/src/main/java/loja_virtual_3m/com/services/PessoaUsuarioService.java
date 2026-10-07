@@ -1,12 +1,16 @@
 package loja_virtual_3m.com.services;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.UUID;
+
+import javax.mail.MessagingException;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import loja_virtual_3m.com.model.Endereco;
 import loja_virtual_3m.com.model.Pessoa_Juridica;
 import loja_virtual_3m.com.model.Usuario;
 import loja_virtual_3m.com.repository.PessoaReppository;
@@ -18,16 +22,29 @@ public class PessoaUsuarioService {
 	private PessoaReppository pReppository;
 	private UsuarioRepository uRepository;
 	private JdbcTemplate templateJdbc;
+	private ServiceSendoEmail email;
+	
 
 	public PessoaUsuarioService(PessoaReppository pessoaReppository, UsuarioRepository userRepository,
-			JdbcTemplate jdbcTemplate) {
+			JdbcTemplate jdbcTemplate, ServiceSendoEmail emailService ) {
 		this.pReppository = pessoaReppository;
 		this.uRepository = userRepository;
 		this.templateJdbc = jdbcTemplate;
+		this.email = emailService;
 
 	}
 
 	public Pessoa_Juridica savePessoaJ(Pessoa_Juridica pJuridica) {
+
+		if (pJuridica.getEnderecos() != null) {
+			for (Endereco endereco : pJuridica.getEnderecos()) {
+
+				endereco.setEmpresa(pJuridica);
+				endereco.setPessoa_endereco(pJuridica);
+
+			}
+		}
+		
 
 		pJuridica = pReppository.save(pJuridica);
 		System.out.println(pJuridica.getId());
@@ -50,8 +67,6 @@ public class PessoaUsuarioService {
 			userPj.setPessoa(pJuridica);
 			userPj.setLogin(pJuridica.getEmail());
 
-			System.out.printf("userPj: " + userPj.toString());
-
 			String senhaAleatoria = UUID.randomUUID().toString().substring(0, 15);
 			System.out.println("Senha Alatoria=" + senhaAleatoria);
 
@@ -63,9 +78,28 @@ public class PessoaUsuarioService {
 
 			uRepository.insertUserPj(userPj.getId());
 
+			StringBuilder msgHtml  = new StringBuilder();
+			msgHtml.append("<b>Segue abaixo os dados de acesso para a loja virtual</b>");
+			msgHtml.append("<b>Login: </b> "+pJuridica.getEmail()+"<br/>");
+			msgHtml.append("<b>Login: </b> "+senhaAleatoria+"<br/>");
+			msgHtml.append("<b>Obrigado !!</b>");
+			
+			
+			
+			try {
+				email.enviarEmailHtml("Acesso gerado para Loja virtual", msgHtml.toString(), pJuridica.getEmail());
+			} catch (UnsupportedEncodingException | MessagingException e) {
+				
+				e.printStackTrace();
+			}
+			
 		}
 
 		return pJuridica;
 	}
+	
+	
+	
+	
 
 }

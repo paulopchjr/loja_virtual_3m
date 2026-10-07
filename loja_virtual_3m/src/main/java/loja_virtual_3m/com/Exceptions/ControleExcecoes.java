@@ -82,7 +82,7 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 		String msg = "";
 
 		if (ex instanceof DataIntegrityViolationException) {
-			msg = "Erro de integridade de dados: " + ex.getMessage();
+		msg = "Erro de integridade de dados: " + ex.getMessage() +"\n causa:"+ ex.getCause()+"\n local: "+ex.getLocalizedMessage();
 
 			// Erro violação de constraint(chave estrangeira/ duplicada)
 			if (ex.getCause() instanceof ConstraintViolationException) {
