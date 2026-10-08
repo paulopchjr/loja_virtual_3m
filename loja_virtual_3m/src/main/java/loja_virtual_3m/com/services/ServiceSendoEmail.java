@@ -50,10 +50,10 @@ public class ServiceSendoEmail {
 		Address[] toUser = InternetAddress.parse(emailDestino);
 		
 		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(userName,"Paulo Henrique - Muju-s Tecnologia", "utf-8"));
+		message.setFrom(new InternetAddress(userName,"Paulo Henrique - Softium", "utf-8"));
 	    message.setRecipients(Message.RecipientType.TO, toUser);
 	    message.setSubject(assunto);
-	    message.setText(msg);
+	    message.setContent(msg,"text/html; charset=utf-8");
 	    
 	    Transport.send(message);
 	}

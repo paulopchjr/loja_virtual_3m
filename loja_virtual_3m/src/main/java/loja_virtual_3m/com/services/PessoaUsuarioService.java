@@ -79,9 +79,11 @@ public class PessoaUsuarioService {
 			uRepository.insertUserPj(userPj.getId());
 
 			StringBuilder msgHtml  = new StringBuilder();
-			msgHtml.append("<b>Segue abaixo os dados de acesso para a loja virtual</b>");
-			msgHtml.append("<b>Login: </b> "+pJuridica.getEmail()+"<br/>");
-			msgHtml.append("<b>Login: </b> "+senhaAleatoria+"<br/>");
+			msgHtml.append("<div style=\"background-color: black; text-decoration:none font-family: Verdana, Arial, Helvetica, sans-serif; color: #A3E4D7; font-weight: bold; padding: 15px; margin-bottom: 15px; border-radius: 4px;\">");
+			msgHtml.append("<b>Segue abaixo os dados de acesso para a loja virtual</b></br>");
+			msgHtml.append("</div>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Login:  "+pJuridica.getEmail()+"</p>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Senha: "+senhaAleatoria+"</p>");
 			msgHtml.append("<b>Obrigado !!</b>");
 			
 			
