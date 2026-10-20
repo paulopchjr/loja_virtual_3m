@@ -2,6 +2,9 @@ package loja_virtual_3m.com.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +15,7 @@ import loja_virtual_3m.com.LojaVirtual3mApplication;
 import loja_virtual_3m.com.Exceptions.ExcessoesCustomizadas;
 import loja_virtual_3m.com.enums.TipoEndereco;
 import loja_virtual_3m.com.model.Endereco;
+import loja_virtual_3m.com.model.Pessoa_Fisica;
 import loja_virtual_3m.com.model.Pessoa_Juridica;
 
 @ActiveProfiles("test")
@@ -63,11 +67,38 @@ public class TestePessoaUsuario {
 
 		pJuridica = pessoaControler.savePj(pJuridica).getBody();
 
-		assertEquals(pJuridica.getId()> 0, true );
+		assertEquals(pJuridica.getId() > 0, true);
 
-		assertEquals(2,pJuridica.getEnderecos().size());
-		
-		
+		assertEquals(2, pJuridica.getEnderecos().size());
+
+	}
+
+	@Test
+	public void testInsertPessoaFisica() throws ParseException, ExcessoesCustomizadas {
+
+		Pessoa_Fisica pFisica = new Pessoa_Fisica();
+		pFisica.setNome("PAULO CEZAR HENRIQUE JUNIOR TESTEA ");
+		pFisica.setCpf("527.986.490-05");
+		pFisica.setDataNascimento(new SimpleDateFormat("dd/MM/yyyy").parse("07/06/1990"));
+		pFisica.setTelefone("(75) 3704-6683");
+		pFisica.setEmail("paulo.1990@yahoo.com");
+
+		Endereco endereco = new Endereco();
+		endereco.setRuaLogradouro("Presidente Vargas");
+		endereco.setCep("16750000");
+		endereco.setBairro("centro");
+		endereco.setCidade("Rubiácea");
+		endereco.setNumero("118");
+		endereco.setUf("SP");
+		endereco.setPessoa_endereco(pFisica);
+		endereco.setEmpresa(pFisica);
+		endereco.setTipoEndereco(TipoEndereco.ENTREGA);
+
+		pFisica.getEnderecos().add(endereco); // ADICIONANDO O ENDERECO NO OBJETO PESSOA FISIC
+
+		pFisica = pessoaControler.savePf(pFisica).getBody();
+
+		assertEquals(1, pFisica.getEnderecos().size());
 	}
 
 }

@@ -11,8 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import loja_virtual_3m.com.model.Endereco;
+import loja_virtual_3m.com.model.Pessoa_Fisica;
 import loja_virtual_3m.com.model.Pessoa_Juridica;
 import loja_virtual_3m.com.model.Usuario;
+import loja_virtual_3m.com.repository.PessoaFisicaRepository;
 import loja_virtual_3m.com.repository.PessoaReppository;
 import loja_virtual_3m.com.repository.UsuarioRepository;
 
@@ -20,17 +22,18 @@ import loja_virtual_3m.com.repository.UsuarioRepository;
 public class PessoaUsuarioService {
 
 	private PessoaReppository pReppository;
+	private PessoaFisicaRepository pfRepository;
 	private UsuarioRepository uRepository;
 	private JdbcTemplate templateJdbc;
 	private ServiceSendoEmail email;
-	
 
-	public PessoaUsuarioService(PessoaReppository pessoaReppository, UsuarioRepository userRepository,
-			JdbcTemplate jdbcTemplate, ServiceSendoEmail emailService ) {
+	public PessoaUsuarioService(PessoaReppository pessoaReppository, PessoaFisicaRepository pessoaFisicaRepository,
+			UsuarioRepository userRepository, JdbcTemplate jdbcTemplate, ServiceSendoEmail emailService) {
 		this.pReppository = pessoaReppository;
 		this.uRepository = userRepository;
 		this.templateJdbc = jdbcTemplate;
 		this.email = emailService;
+		this.pfRepository = pessoaFisicaRepository;
 
 	}
 
@@ -44,10 +47,8 @@ public class PessoaUsuarioService {
 
 			}
 		}
-		
 
 		pJuridica = pReppository.save(pJuridica);
-		System.out.println(pJuridica.getId());
 
 		Usuario userPj = uRepository.fidUserByPessoa(pJuridica.getId(), pJuridica.getEmail());
 
@@ -76,32 +77,96 @@ public class PessoaUsuarioService {
 
 			uRepository.save(userPj);
 
-			uRepository.insertUserPj(userPj.getId());
+			uRepository.insertUserPj(userPj.getId(), "ROLE_ADMIN");
 
-			StringBuilder msgHtml  = new StringBuilder();
-			msgHtml.append("<div style=\"background-color: black; text-decoration:none font-family: Verdana, Arial, Helvetica, sans-serif; color: #A3E4D7; font-weight: bold; padding: 15px; margin-bottom: 15px; border-radius: 4px;\">");
+			StringBuilder msgHtml = new StringBuilder();
+			msgHtml.append(
+					"<div style=\"background-color: black; text-decoration:none font-family: Verdana, Arial, Helvetica, sans-serif; color: #A3E4D7; font-weight: bold; padding: 15px; margin-bottom: 15px; border-radius: 4px;\">");
 			msgHtml.append("<b>Segue abaixo os dados de acesso para a loja virtual</b></br>");
 			msgHtml.append("</div>");
-			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Login:  "+pJuridica.getEmail()+"</p>");
-			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Senha: "+senhaAleatoria+"</p>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Login:  "
+					+ pJuridica.getEmail() + "</p>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Senha: " + senhaAleatoria
+					+ "</p>");
 			msgHtml.append("<b>Obrigado !!</b>");
-			
-			
-			
+
 			try {
 				email.enviarEmailHtml("Acesso gerado para Loja virtual", msgHtml.toString(), pJuridica.getEmail());
 			} catch (UnsupportedEncodingException | MessagingException e) {
-				
+
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		return pJuridica;
 	}
-	
-	
-	
-	
+
+	public Pessoa_Fisica savePessoaFisica(Pessoa_Fisica pFisica) {
+
+		if (pFisica.getEnderecos() != null) {
+			for (Endereco endereco : pFisica.getEnderecos()) {
+
+				endereco.setPessoa_endereco(pFisica);
+
+			}
+		}
+
+		pFisica = pfRepository.save(pFisica);
+
+		boolean usuarioJaExiste = uRepository.existeByPessoaIdPorLogin(pFisica.getId(), pFisica.getEmail());
+
+		if (!usuarioJaExiste) {
+
+			// identifica a restricao no banco
+			String constraint = uRepository.consultaConstraintAcesso();
+
+			// remove a constraint que esta impedindo salvar varios acessos no usuario
+			if (constraint != null) {
+				templateJdbc.execute("begin; alter table usuario_acesso drop constraint  " + constraint + "; commit;");
+			}
+
+			Usuario userPf = new Usuario();
+			userPf.setDataAtualSenha(Calendar.getInstance().getTime());
+			userPf.setEmpresa(pFisica);
+			userPf.setPessoa(pFisica);
+			userPf.setLogin(pFisica.getEmail());
+
+			System.out.println(pFisica.getEmail());
+			System.out.println(userPf.getLogin());
+
+			String senhaAleatoria = UUID.randomUUID().toString().substring(0, 15);
+			System.out.println("Senha Alatoria=" + senhaAleatoria);
+
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(senhaAleatoria);
+
+			userPf.setSenha(senhaCriptografada);
+
+			uRepository.save(userPf);
+
+			uRepository.insertUser(userPf.getId());
+
+			StringBuilder msgHtml = new StringBuilder();
+			msgHtml.append(
+					"<div style=\"background-color: black; text-decoration:none font-family: Verdana, Arial, Helvetica, sans-serif; color: #A3E4D7; font-weight: bold; padding: 15px; margin-bottom: 15px; border-radius: 4px;\">");
+			msgHtml.append("<b>Segue abaixo os dados de acesso para a loja virtual</b></br>");
+			msgHtml.append("</div>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Login:  "
+					+ pFisica.getEmail() + "</p>");
+			msgHtml.append("<p style=\"color:black; font-weight:bold;  margin-bottom: 5px;\">Senha: " + senhaAleatoria
+					+ "</p>");
+			msgHtml.append("<b>Obrigado !!</b>");
+
+			try {
+				email.enviarEmailHtml("Acesso gerado para Loja virtual", msgHtml.toString(), pFisica.getEmail());
+			} catch (UnsupportedEncodingException | MessagingException e) {
+
+				e.printStackTrace();
+			}
+
+		}
+		return pFisica;
+
+	}
 
 }
