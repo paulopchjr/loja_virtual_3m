@@ -23,6 +23,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) /* nao coloca tabela no banco de dados */
@@ -35,13 +39,19 @@ public abstract class Pessoa implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pessoa")
 	private Long id;
 
+	@Size(min = 4, message = "O nome deve ter no minimo 4 letras")
+	@NotBlank(message = "Nome deve ser informado")
+	@NotNull(message = "Nome deve ser informado")
 	@Column(nullable = false)
 	private String nome;
 
+	
+	@Email(message = "Digite um email válido")
 	 @JsonFormat(lenient = OptBoolean.FALSE)
 	@Column(nullable = false)
 	private String email;
 
+	
 	@Column(nullable = false)
 	private String telefone;
 

@@ -30,7 +30,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	@Transactional
 	@Modifying
 	@Query(nativeQuery = true, value = "insert into usuario_acesso(usuario_id,acesso_id) values(?1,(select id from acesso where acesso_desc = 'ROLE_USER')) ")
-	void insertUser(Long id);
+	void insertUserAcesso(Long id);
 
 	@Transactional
 	@Modifying

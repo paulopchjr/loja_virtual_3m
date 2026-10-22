@@ -1,5 +1,7 @@
 package loja_virtual_3m.com.model;
 
+import org.hibernate.validator.constraints.br.CNPJ;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -10,6 +12,7 @@ public class Pessoa_Juridica extends Pessoa {
 
 	private static final long serialVersionUID = 1L;
 
+	@CNPJ(message = "CNPJ está inválido")
 	@Column(nullable = false)
 	private String cnpj;
 	@Column(nullable = false)

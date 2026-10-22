@@ -77,25 +77,41 @@ public class TestePessoaUsuario {
 	public void testInsertPessoaFisica() throws ParseException, ExcessoesCustomizadas {
 
 		Pessoa_Fisica pFisica = new Pessoa_Fisica();
-		pFisica.setNome("PAULO CEZAR HENRIQUE JUNIOR TESTEA ");
-		pFisica.setCpf("527.986.490-05");
-		pFisica.setDataNascimento(new SimpleDateFormat("dd/MM/yyyy").parse("07/06/1990"));
+		pFisica.setNome("PAULIN");
+		pFisica.setCpf("934.689.240-46");
+		pFisica.setDataNascimento(new SimpleDateFormat("dd/MM/yyyy").parse("23/02/1958"));
 		pFisica.setTelefone("(75) 3704-6683");
-		pFisica.setEmail("paulo.1990@yahoo.com");
+		pFisica.setEmail("paulocezarhenriquejunior1990@gmail.com");
 
 		Endereco endereco = new Endereco();
-		endereco.setRuaLogradouro("Presidente Vargas");
-		endereco.setCep("16750000");
-		endereco.setBairro("centro");
-		endereco.setCidade("Rubiácea");
+		endereco.setRuaLogradouro("TESTE");
+		endereco.setCep("74063010");
+		endereco.setBairro("AASASA");
+		endereco.setCidade("RubiáceASAASa");
 		endereco.setNumero("118");
 		endereco.setUf("SP");
 		endereco.setPessoa_endereco(pFisica);
 		endereco.setEmpresa(pFisica);
 		endereco.setTipoEndereco(TipoEndereco.ENTREGA);
 
-		pFisica.getEnderecos().add(endereco); // ADICIONANDO O ENDERECO NO OBJETO PESSOA FISIC
+		Endereco endereco2 = new Endereco();
+		endereco2.setRuaLogradouro("TESTE");
+		endereco2.setCep("65915306");
+		endereco2.setBairro("AASASA");
+		endereco2.setCidade("RubiáceASAASa");
+		endereco2.setNumero("11558");
+		endereco2.setUf("SP");
+		endereco2.setPessoa_endereco(pFisica);
+		endereco2.setEmpresa(pFisica);
+		endereco2.setTipoEndereco(TipoEndereco.ENTREGA);
 
+		
+		
+		
+		
+		pFisica.getEnderecos().add(endereco); // ADICIONANDO O ENDERECO NO OBJETO PESSOA FISIC
+		pFisica.getEnderecos().add(endereco2);
+		
 		pFisica = pessoaControler.savePf(pFisica).getBody();
 
 		assertEquals(1, pFisica.getEnderecos().size());

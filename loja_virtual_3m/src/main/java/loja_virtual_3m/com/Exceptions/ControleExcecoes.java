@@ -26,11 +26,18 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import loja_virtual_3m.com.DTO.ErrorDto;
 
 @RestControllerAdvice
-@ControllerAdvice
 public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 	/* CAPTURA EXCECOES DO PROJETO */
 	@ExceptionHandler({ Exception.class, RuntimeException.class, Throwable.class })
+	public ResponseEntity<Object> handleGlobalExceptions(Exception ex, WebRequest request) {
+		HttpHeaders headers = new HttpHeaders();
+		HttpStatusCode status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+		// Encaminha de maneira correta para o método interno do Spring
+		return this.handleExceptionInternal(ex, null, headers, status, request);
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
 			HttpStatusCode statusCode, WebRequest request) {
@@ -61,7 +68,7 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 		}
 
 		else {
-			msg = ex.getMessage() !=null ? ex.getMessage() :"Error sem mensagem disponível";
+			msg = ex.getMessage() != null ? ex.getMessage() : "Error sem mensagem disponível";
 		}
 
 		errorDto.setError(msg.toString().trim());
@@ -82,7 +89,8 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 		String msg = "";
 
 		if (ex instanceof DataIntegrityViolationException) {
-		msg = "Erro de integridade de dados: " + ex.getMessage() +"\n causa:"+ ex.getCause()+"\n local: "+ex.getLocalizedMessage();
+			msg = "Erro de integridade de dados: " + ex.getMessage() + "\n causa:" + ex.getCause() + "\n local: "
+					+ ex.getLocalizedMessage();
 
 			// Erro violação de constraint(chave estrangeira/ duplicada)
 			if (ex.getCause() instanceof ConstraintViolationException) {
@@ -92,7 +100,7 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 				msg = "Erro de restrição de banco. Constraint afetada: "
 						+ constraintViolationException.getConstraintName();
 			}
-			
+
 		} else if (ex instanceof ConstraintViolationException) {
 			msg = "Chave estrangeira ou integridade violada: "
 					+ ((ConstraintViolationException) ex).getConstraintName();
@@ -122,10 +130,10 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 
 		} else {
 
-			msg = ex.getMessage() !=null? ex.getMessage():"Erro desconhecido na camada de persistencia";
+			msg = ex.getMessage() != null ? ex.getMessage() : "Erro desconhecido na camada de persistencia";
 
 		}
-		
+
 		errorDto.setError(msg);
 
 		errorDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
