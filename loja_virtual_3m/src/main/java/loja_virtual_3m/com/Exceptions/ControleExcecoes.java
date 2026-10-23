@@ -1,9 +1,14 @@
 package loja_virtual_3m.com.Exceptions;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,7 +18,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -24,9 +28,13 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import loja_virtual_3m.com.DTO.ErrorDto;
+import loja_virtual_3m.com.services.ServiceSendoEmail;
 
 @RestControllerAdvice
 public class ControleExcecoes extends ResponseEntityExceptionHandler {
+
+	@Autowired
+	private ServiceSendoEmail serviceSendEmail;
 
 	/* CAPTURA EXCECOES DO PROJETO */
 	@ExceptionHandler({ Exception.class, RuntimeException.class, Throwable.class })
@@ -76,6 +84,14 @@ public class ControleExcecoes extends ResponseEntityExceptionHandler {
 		HttpStatus httpStatus = HttpStatus.resolve(statusCode.value());
 		String reasonPhrase = (httpStatus != null) ? httpStatus.getReasonPhrase() : "Status desconhecido ";
 		errorDto.setCode(statusCode.value() + "=====>" + reasonPhrase);
+
+		/*try {
+			serviceSendEmail.enviarEmailHtml("Erro na loja virtual", ExceptionUtils.getStackTrace(ex),
+					"pchjr.dev@gmail.com");
+		} catch (UnsupportedEncodingException | MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 
 		return new ResponseEntity<Object>(errorDto, statusCode);
 	}

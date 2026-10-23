@@ -18,6 +18,7 @@ import loja_virtual_3m.com.model.Endereco;
 import loja_virtual_3m.com.model.Pessoa_Fisica;
 import loja_virtual_3m.com.model.Pessoa_Juridica;
 import loja_virtual_3m.com.model.Usuario;
+import loja_virtual_3m.com.repository.EnderecoRepository;
 import loja_virtual_3m.com.repository.PessoaFisicaRepository;
 import loja_virtual_3m.com.repository.PessoaReppository;
 import loja_virtual_3m.com.repository.UsuarioRepository;
@@ -30,14 +31,17 @@ public class PessoaUsuarioService {
 	private UsuarioRepository uRepository;
 	private JdbcTemplate templateJdbc;
 	private ServiceSendoEmail email;
+	private EnderecoRepository enderecoRepository;
 
 	public PessoaUsuarioService(PessoaReppository pessoaReppository, PessoaFisicaRepository pessoaFisicaRepository,
-			UsuarioRepository userRepository, JdbcTemplate jdbcTemplate, ServiceSendoEmail emailService) {
+			UsuarioRepository userRepository, JdbcTemplate jdbcTemplate, ServiceSendoEmail emailService,
+			EnderecoRepository endRepository) {
 		this.pReppository = pessoaReppository;
 		this.uRepository = userRepository;
 		this.templateJdbc = jdbcTemplate;
 		this.email = emailService;
 		this.pfRepository = pessoaFisicaRepository;
+		this.enderecoRepository = endRepository;
 
 	}
 
@@ -58,7 +62,7 @@ public class PessoaUsuarioService {
 		return pJuridica;
 	}
 
-	public Pessoa_Fisica savePessoaFisica(Pessoa_Fisica pFisica) throws ExcessoesCustomizadas  {
+	public Pessoa_Fisica savePessoaFisica(Pessoa_Fisica pFisica) throws ExcessoesCustomizadas {
 
 		this.processarEnderecosPf(pFisica.getEnderecos(), pFisica);
 
@@ -90,7 +94,7 @@ public class PessoaUsuarioService {
 		uRepository.save(userPj);
 		uRepository.insertUserAcesso(userPj.getId());
 
-		this.enviarEmailBoasVindas("Acesso Gerado para a Loja Virtual TESTE:",pj.getEmail(), senhaAleatoria);
+		this.enviarEmailBoasVindas("Acesso Gerado para a Loja Virtual TESTE:", pj.getEmail(), senhaAleatoria);
 	}
 
 	private void criarUsuarioEEnviarEmailPf(Pessoa_Fisica pf) {
@@ -108,7 +112,7 @@ public class PessoaUsuarioService {
 		uRepository.save(userPf);
 		uRepository.insertUserAcesso(userPf.getId());
 
-		this.enviarEmailBoasVindas("Acesso Gerado para a Loja Virtual:",pf.getEmail(), senhaAleatoria);
+		this.enviarEmailBoasVindas("Acesso Gerado para a Loja Virtual:", pf.getEmail(), senhaAleatoria);
 	}
 
 	private void enviarEmailBoasVindas(String Assunto, String emailDestino, String senhaAleatoria) {
@@ -193,6 +197,29 @@ public class PessoaUsuarioService {
 
 	public CepDTO consultaCep(String cep) {
 		return new RestTemplate().getForEntity("https://viacep.com.br/ws/" + cep + "/json/", CepDTO.class).getBody();
+	}
+
+	public Endereco atualizarEndereco(Long enderecoid, Endereco enderecoAtualizado) throws ExcessoesCustomizadas {
+
+		// localiza o endereco atual que está no banco
+
+		Endereco enderecoExistente = enderecoRepository.findById(enderecoid)
+				.orElseThrow(() -> new ExcessoesCustomizadas("Endereço não encontrado"));
+
+		/// atualiza os campos mutávis vindo do front / requesição
+
+		enderecoExistente.setCep(enderecoAtualizado.getCep());
+		enderecoExistente.setNumero(enderecoAtualizado.getNumero());
+		enderecoExistente.setComplemento(enderecoAtualizado.getComplemento());
+
+		// se for mudar a matriz para quem é pessoa juridica
+		if (enderecoAtualizado.getTipoEndereco() != null) {
+			enderecoExistente.setTipoEndereco(enderecoAtualizado.getTipoEndereco());
+		}
+
+		this.atualizarDadosPorCep(enderecoExistente);
+
+		return enderecoRepository.save(enderecoExistente);
 	}
 
 }

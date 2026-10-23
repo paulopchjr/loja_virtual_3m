@@ -5,6 +5,8 @@ import org.hibernate.validator.constraints.br.CNPJ;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "pessoa_juridica")
@@ -15,12 +17,16 @@ public class Pessoa_Juridica extends Pessoa {
 	@CNPJ(message = "CNPJ está inválido")
 	@Column(nullable = false)
 	private String cnpj;
+	
+	@Size(max = 20, message = "A inscrição deve ter no máximo 14 Digitos.")
 	@Column(nullable = false)
 	private String inscricaoEstadual;
 
 	private String inscricaoMunicipal;
 
-	@Column(nullable = false)
+	@Size(min = 3, message = "O nome fantasia deve pelo menos 3 caracteres")
+	@NotBlank(message = "Preencha o nome Fantasia")
+	@Column(nullable = false, name = "nome_fantasia", length = 60)
 	private String nomeFantasia;
 
 	@Column(nullable = false)
