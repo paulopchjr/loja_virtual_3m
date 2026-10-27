@@ -45,13 +45,11 @@ public abstract class Pessoa implements Serializable {
 	@Column(nullable = false)
 	private String nome;
 
-	
 	@Email(message = "Digite um email válido")
-	 @JsonFormat(lenient = OptBoolean.FALSE)
+	@JsonFormat(lenient = OptBoolean.FALSE)
 	@Column(nullable = false)
 	private String email;
 
-	
 	@Column(nullable = false)
 	private String telefone;
 
@@ -115,6 +113,14 @@ public abstract class Pessoa implements Serializable {
 		this.telefone = telefone;
 	}
 
+	public String getTipoPessoa() {
+		return tipoPessoa;
+	}
+
+	public void setTipoPessoa(String tipoPessoa) {
+		this.tipoPessoa = tipoPessoa;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -137,6 +143,7 @@ public abstract class Pessoa implements Serializable {
 		return "Pessoa [id=" + id + ", nome=" + nome + ", email=" + email + ", telefone=" + telefone + ", tipoPessoa="
 				+ tipoPessoa + ", enderecos=" + enderecos + ", empresa=" + empresa + "]";
 	}
+	
 	
 	
 	

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import loja_virtual_3m.com.DTO.CepDTO;
+import loja_virtual_3m.com.DTO.ConsultaCnpjDto;
 import loja_virtual_3m.com.Exceptions.ExcessoesCustomizadas;
+import loja_virtual_3m.com.enums.TipoPessoa;
 import loja_virtual_3m.com.model.Pessoa_Fisica;
 import loja_virtual_3m.com.model.Pessoa_Juridica;
 import loja_virtual_3m.com.repository.EnderecoRepository;
@@ -45,33 +47,32 @@ public class PessoaControler {
 		this.enderecoRepository = endRepository;
 	}
 
-	
-	
-	
-	
 	@ResponseBody
 	@GetMapping(value = "/consultaPjNome/{nome}")
-	public ResponseEntity<List<Pessoa_Juridica>> consultaPjNome(@PathVariable("nome") String nome){
-		
-		List<Pessoa_Juridica>listaPj = pessoaReppository.pesquisaPorNomePj(nome.trim().toUpperCase());
-		
+	public ResponseEntity<List<Pessoa_Juridica>> consultaPjNome(@PathVariable("nome") String nome) {
+
+		List<Pessoa_Juridica> listaPj = pessoaReppository.pesquisaPorNomePj(nome.trim().toUpperCase());
+
 		return new ResponseEntity<List<Pessoa_Juridica>>(listaPj, HttpStatus.OK);
-		
-		
+
 	}
-	
+
 	@ResponseBody
 	@GetMapping(value = "/consultaCnpj")
-	public ResponseEntity<List<Pessoa_Juridica>> consultaPjCnpj(@RequestParam("cnpj") String cnpj){
-		
-		List<Pessoa_Juridica>listaCnpj = pessoaReppository.pesquisaPorCnpj(cnpj);
-		
+	public ResponseEntity<List<Pessoa_Juridica>> consultaPjCnpj(@RequestParam("cnpj") String cnpj) {
+
+		List<Pessoa_Juridica> listaCnpj = pessoaReppository.pesquisaPorCnpj(cnpj);
+
 		return new ResponseEntity<List<Pessoa_Juridica>>(listaCnpj, HttpStatus.OK);
-		
-		
+
 	}
-	
-	
+
+	@ResponseBody
+	@GetMapping(value = "/consultaCnpjReceita/{cnpj}")
+	public ResponseEntity<ConsultaCnpjDto> consultaCnpjWs(@PathVariable("cnpj") String cnpj) throws Exception {
+
+		return new ResponseEntity<ConsultaCnpjDto>(pessoaUsuarioService.consultaCnpjReceitaWs(cnpj), HttpStatus.OK);
+	}
 	
 	
 	@ResponseBody
@@ -81,6 +82,7 @@ public class PessoaControler {
 		return new ResponseEntity<CepDTO>(pessoaUsuarioService.consultaCep(cep), HttpStatus.OK);
 	}
 
+
 	@ResponseBody
 	@PostMapping(value = "/salvarPj")
 	public ResponseEntity<Pessoa_Juridica> savePj(@RequestBody @Valid Pessoa_Juridica pj) throws ExcessoesCustomizadas {
@@ -89,6 +91,10 @@ public class PessoaControler {
 
 			throw new ExcessoesCustomizadas("Pessoa Jurídica, não pode ser Null!");
 
+		}
+		
+		if (pj.getTipoPessoa() == null) {
+			throw new ExcessoesCustomizadas("Informe o tipo de Pessoa! Juridica ou Fornecedor");
 		}
 
 		if (pj.getId() == null && pessoaReppository.contemCnpjCadastrado(pj.getCnpj()) != null) {
@@ -108,16 +114,19 @@ public class PessoaControler {
 
 		}
 
-		if (pj.getInscricaoEstadual() != null && pessoaReppository.contemInscricaoEstadualCadastrado(pj.getInscricaoEstadual()) != null) {
+		if (pj.getInscricaoEstadual() != null
+				&& pessoaReppository.contemInscricaoEstadualCadastrado(pj.getInscricaoEstadual()) != null) {
 
 			throw new ExcessoesCustomizadas(
 					"Já existe essa Inscrição Estadual cadastrada no sistema!!  I.E:" + pj.getInscricaoEstadual());
 
 		}
-		
-		if (pj.getNomeFantasia() !=null && pessoaReppository.existeNomeFantasia(pj.getNomeFantasia()) !=null) {
-			
-			throw new ExcessoesCustomizadas("Já existe essa Inscrição Estadual cadastrada no sistema!! essa empresa \\n:" + pj.getNomeFantasia());
+
+		if (pj.getNomeFantasia() != null && pessoaReppository.existeNomeFantasia(pj.getNomeFantasia()) != null) {
+
+			throw new ExcessoesCustomizadas(
+					"Já existe essa Inscrição Estadual cadastrada no sistema!! essa empresa \\n:"
+							+ pj.getNomeFantasia());
 		}
 
 		pj = pessoaUsuarioService.savePessoaJ(pj);
@@ -133,6 +142,10 @@ public class PessoaControler {
 
 			throw new ExcessoesCustomizadas("Pessoa Fisíca, não pode ser Null!");
 
+		}
+		
+		if (pf.getTipoPessoa() == null) {
+			pf.setTipoPessoa(TipoPessoa.FISICA.name());
 		}
 
 		if (pf.getId() == null && pessoaFisicaRepository.contemCpfCadastrado(pf.getCpf()) != null) {

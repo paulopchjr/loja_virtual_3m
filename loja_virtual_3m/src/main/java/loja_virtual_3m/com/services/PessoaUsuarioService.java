@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import loja_virtual_3m.com.DTO.CepDTO;
+import loja_virtual_3m.com.DTO.ConsultaCnpjDto;
 import loja_virtual_3m.com.Exceptions.ExcessoesCustomizadas;
 import loja_virtual_3m.com.model.Endereco;
 import loja_virtual_3m.com.model.Pessoa_Fisica;
@@ -220,6 +221,26 @@ public class PessoaUsuarioService {
 		this.atualizarDadosPorCep(enderecoExistente);
 
 		return enderecoRepository.save(enderecoExistente);
+	}
+
+	public ConsultaCnpjDto consultaCnpjReceitaWs(String cnpj) throws Exception {
+
+		
+	String cnpjLimpo =	cnpj.replaceAll("[./-]", "");
+		
+		RestTemplate restTemplate = new RestTemplate();
+		String url = "https://receitaws.com.br/v1/cnpj/" + cnpjLimpo;
+
+		try {
+			// Faz a chamada e pega como String pura para analisar se necessário
+			return restTemplate.getForEntity(url, ConsultaCnpjDto.class).getBody();
+		} catch (Exception e) {
+			// Se der erro, vamos tentar descobrir o que a API respondeu
+			String respostaBruta = restTemplate.getForObject(url, String.class);
+			System.out.println("⚠️ Resposta bruta da API: " + respostaBruta);
+			throw new RuntimeException("Erro ao consultar CNPJ. Resposta da API: " + respostaBruta, e);
+		}
+
 	}
 
 }

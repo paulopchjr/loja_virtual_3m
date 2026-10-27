@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class ServiceSendoEmail {
 
 	private String userName = "pchjr.dev2@gmail.com";
-	private String senha = "ssmr ckog rzap dtnx";
+	private String senha = "ssmr ckog rzap dstnx";
 
 	@Async
 	public void enviarEmailHtml(String assunto, String msg, String emailDestino)
